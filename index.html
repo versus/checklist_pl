@@ -100,9 +100,10 @@
             z-index: 1;
             top: 10px;
             right: 10px;
-            width: 100px;
-            height: 100px;
-            font-size: 70px;
+            width: 50px;
+            height: 50px;
+            font-size: 30px;
+            padding: 10px;
             border: solid 1px grey;
             box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
             background-color: #eff;
@@ -134,13 +135,9 @@
             left: 10px;
             width: 100px;
             height: 100px;
-            font-size: 70px;
-            border: solid 1px grey;
-            box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
-            background-color: #eff;
+            font-size: 50px;
             text-align: center;
             cursor: pointer;
-            border-radius: 50px;
             padding-top: 10px;
         }
 
@@ -197,6 +194,7 @@
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <script src="https://kit.fontawesome.com/e9057b7d35.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
     <script>
         var spouseCol = 4;
@@ -387,9 +385,9 @@
 <body>
 
     <div class="page non-printable" style="min-height: auto">
-        <div class="print-button">🖶</div>
+        <div class="print-button"><i class="fa-solid fa-print"></i></div>
         <a target="_blank" href="https://t.me/JDG_PBH">
-            <div class="help-button">?</div>
+            <div class="help-button"><i class="fa-solid fa-circle-info"></i></div>
         </a>
         <h2>Чек-лист для подачи на ВНЖ с целью ведения деятельности</h2>
         Чек-лист
@@ -434,7 +432,7 @@
                 <td class="narrow"><a class="big-letter" style="font-size: 15pt" rel="modal:open"
                         href="#c-header-check">&check;</a></td>
                 <td class="narrow"><a class="big-letter" style="font-size: 15pt; line-height: 5mm" rel="modal:open"
-                        href="#c-header-printed">Распечатано</a></td>
+                        href="#c-header-printed"><i class="fa-solid fa-paperclip"></i></a></td>
             </tr>
             <tr class="group">
                 <th></th>
