@@ -74,6 +74,29 @@
             text-align: left;
         }
 
+        .site-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .site-nav a {
+            padding: 8px 12px;
+            border: solid 1px grey;
+            border-radius: 5px;
+            background-color: #eff;
+            color: black;
+            font-size: 11pt;
+            text-decoration: none;
+            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .site-nav a:hover,
+        .site-nav a.active {
+            background-color: #ffb;
+        }
+
         .big-letter {
             font-size: 13pt;
         }
@@ -389,8 +412,11 @@
         <a target="_blank" href="https://t.me/JDG_PBH">
             <div class="help-button"><i class="fa-solid fa-circle-info"></i></div>
         </a>
+        <div class="site-nav non-printable">
+            <a href="./" class="active"><i class="fa-solid fa-list-check"></i> Чек-лист на ВНЖ (деятельность)</a>
+            <a href="residence/"><i class="fa-solid fa-id-card"></i> Карта резидента ЕС</a>
+        </div>
         <h2>Чек-лист для подачи на ВНЖ с целью ведения деятельности</h2>
-        <p><a href="residence/">🪪 Карта долгосрочного резидента ЕС (Польша): список документов и образцы</a></p>
         Чек-лист
         <select class="persisted" name="listType" id="listType">
             <option value="full" selected="selected">полный</option>

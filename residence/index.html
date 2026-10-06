@@ -1,34 +1,156 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Список необходимых документов для оформления карты резидента ЕС</title>
-<style>
-:root{--bg:#fff;--fg:#37352f;--muted:#787774;--line:#e9e9e7;--cover:#e8837c}
-@media(prefers-color-scheme:dark){:root{--bg:#191919;--fg:#e6e6e4;--muted:#9b9a97;--line:#373737;--cover:#8a3b36}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
-.cover{height:30vh;min-height:160px;background:var(--cover)}
-main{max-width:900px;margin:0 auto;padding:0 16px 80px}
-.icon{font-size:78px;line-height:1;margin-top:-39px}
-h1{font-size:2.3rem;line-height:1.2;margin:16px 0 24px}
-p{margin:.6em 0} ul{margin:.4em 0;padding-left:1.4em} li{margin:.25em 0}
-mark{background:none;border-radius:3px;padding:0 2px}
-mark.red{background:rgba(255,115,105,.25)} mark.blue{background:rgba(51,126,169,.22)} mark.teal{background:rgba(68,131,97,.25)}
-a{color:inherit;text-decoration:underline;text-decoration-color:var(--muted)}
-.file{display:flex;align-items:center;gap:12px;padding:10px 12px;margin:6px 0;border:1px solid var(--line);border-radius:6px;text-decoration:none}
-.file:hover{background:rgba(127,127,127,.1)}
-.ext{font-size:11px;font-weight:700;border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--muted)}
-.fn{flex:1;word-break:break-word} .sz{color:var(--muted);font-size:13px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Карта резидента ЕС</title>
+    <style>
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #ddd;
+            font: 10pt "Arial";
+        }
+
+        * {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
+
+        .page {
+            width: 210mm;
+            max-width: 100%;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: 10mm auto;
+            border: 1px #D3D3D3 solid;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
+            font-size: 11pt;
+            line-height: 1.5;
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        .site-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .site-nav a {
+            padding: 8px 12px;
+            border: solid 1px grey;
+            border-radius: 5px;
+            background-color: #eff;
+            color: black;
+            font-size: 11pt;
+            text-decoration: none;
+            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .site-nav a:hover,
+        .site-nav a.active {
+            background-color: #ffb;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        ul {
+            padding-left: 1.4em;
+        }
+
+        li {
+            margin: 4px 0;
+        }
+
+        mark {
+            background: none;
+            padding: 0 2px;
+        }
+
+        mark.red {
+            background-color: #fdd;
+        }
+
+        mark.blue {
+            background-color: #dff;
+        }
+
+        mark.teal {
+            background-color: #dfd;
+        }
+
+        ul.files {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul.files a {
+            color: #06c;
+        }
+
+        .size {
+            color: grey;
+            font-size: 9pt;
+        }
+
+        .help-button {
+            position: fixed;
+            z-index: 1;
+            bottom: 10px;
+            left: 10px;
+            width: 100px;
+            height: 100px;
+            font-size: 50px;
+            text-align: center;
+            cursor: pointer;
+            padding-top: 10px;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+            }
+
+            .page {
+                border: initial;
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                box-shadow: initial;
+                margin: 0;
+            }
+
+            .non-printable {
+                display: none;
+            }
+        }
+    </style>
+    <script src="https://kit.fontawesome.com/e9057b7d35.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
-<div class="cover"></div>
-<main>
-<p><a href="../">← Чек-лист на ВНЖ (деятельность)</a></p>
-<div class="icon">🪪</div>
-<h1>Список необходимых документов для оформления карты резидента ЕС</h1>
+    <a class="non-printable" target="_blank" href="https://t.me/JDG_PBH">
+        <div class="help-button"><i class="fa-solid fa-circle-info"></i></div>
+    </a>
+    <div class="page">
+        <div class="site-nav non-printable">
+    <a href="../"><i class="fa-solid fa-list-check"></i> Чек-лист на ВНЖ (деятельность)</a>
+    <a href="./" class="active"><i class="fa-solid fa-id-card"></i> Карта резидента ЕС</a>
+</div>
+        <h2>🪪 Список необходимых документов для оформления карты резидента ЕС</h2>
+
 <p>Безусловно, в каждом воеводстве могут быть небольшие расхождения и нюансы, однако я предлагаю вам универсальный список, составленный в соответствии с текущим законодательством, который позволит вам получить постоянный внж без проблем. Все лайфхаки и замечания будут указаны ниже, а также не поленитесь заглянуть в раздел FAQ, который будет постоянно пополнятся.</p>
 <p><strong>ВНИМАНИЕ!</strong></p>
 <ul>
@@ -61,14 +183,16 @@ a{color:inherit;text-decoration:underline;text-decoration-color:var(--muted)}
 </ul>
 <p><mark class="red"><em><strong>Табличка для подсчета необходимого дохода на карту резидента ЕС – </strong></em></mark><a href="https://archiwum.mazowieckie.pl/archiwum.mazowieckie.pl/download/1/56323/TABELA_-_KRYTERIUM_DOCHODOWE.xls" target="_blank" rel="noopener"><mark class="red"><em><strong>скачать</strong></em></mark></a><mark class="red"><em><strong> и адаптировать под себя.</strong></em></mark></p>
 <p><mark class="red"><em><strong>Образец таблички по подсчету срока пребывания - вещь необязательная, но значительно упрощающая подготовку документов:</strong></em></mark></p>
-<a class="file" href="files/Wyliczenie_pobytu.xlsx" download><span class="ext">XLSX</span><span class="fn">Wyliczenie_pobytu.xlsx</span><span class="sz">14.1KB</span></a>
-<p>Документы, полученные в электронном виде, необходимо отправлять в электронном<br>виде (например, с помощью epuap). В случае печати их на бумажном носители стоит дополнительно к документу прикрепить (распечатать) подтверждение валидности подписи, которое вы можете получить тут: <mark class="red"><a href="https://weryfikacjapodpisu.pl/verification/" target="_blank" rel="noopener">https://weryfikacjapodpisu.pl/verification/</a></mark></p>
-<a class="file" href="files/Oswiadczenie_o_utrzymaniu_czonkow_rodziny.docx" download><span class="ext">DOCX</span><span class="fn">Oświadczenie o utrzymaniu członków rodziny (1).docx</span><span class="sz">7.3KB</span></a>
-<a class="file" href="files/Oswiadczenie_o_wyjazdach.docx" download><span class="ext">DOCX</span><span class="fn">Oświadczenie o wyjazdach.docx</span><span class="sz">13.9KB</span></a>
-<a class="file" href="files/Penomocnictwo_na_zozenie_dokumentow_w_urzedzie_-_wzor_wypenienia.docx" download><span class="ext">DOCX</span><span class="fn">Pełnomocnictwo na złożenie dokumentów w urzędzie - wzór wypełnienia .docx</span><span class="sz">14.4KB</span></a>
-<a class="file" href="files/Penomocnictwo_na_zozenie_dokumentow_w_urzedzie_-_wzor_wypenienia.pdf" download><span class="ext">PDF</span><span class="fn">Pełnomocnictwo na złożenie dokumentów w urzędzie - wzór wypełnienia .pdf</span><span class="sz">364.5KB</span></a>
-<a class="file" href="files/Podanie_uzupenienie_dokumentacji.docx" download><span class="ext">DOCX</span><span class="fn">Podanie_uzupełnienie dokumentacji.docx</span><span class="sz">20.3KB</span></a>
-<a class="file" href="files/Zalacznik_nr_5_Wzor_oswiadczenia_o_datach_wyjazdu_z_Polski_-_wersja_3_0.doc" download><span class="ext">DOC</span><span class="fn">Zalacznik__nr_5_Wzor_oswiadczenia_o_datach_wyjazdu_z_Polski_-_wersja_3_0.doc</span><span class="sz">42.5KB</span></a>
-</main>
+<ul class="files"><li><a href="files/Wyliczenie_pobytu.xlsx" download><i class="fa-solid fa-file-arrow-down"></i> Wyliczenie_pobytu.xlsx</a> <span class="size">(14.1KB)</span></li>
+</ul><p>Документы, полученные в электронном виде, необходимо отправлять в электронном<br>виде (например, с помощью epuap). В случае печати их на бумажном носители стоит дополнительно к документу прикрепить (распечатать) подтверждение валидности подписи, которое вы можете получить тут: <mark class="red"><a href="https://weryfikacjapodpisu.pl/verification/" target="_blank" rel="noopener">https://weryfikacjapodpisu.pl/verification/</a></mark></p>
+<ul class="files"><li><a href="files/Oswiadczenie_o_utrzymaniu_czonkow_rodziny.docx" download><i class="fa-solid fa-file-arrow-down"></i> Oświadczenie o utrzymaniu członków rodziny (1).docx</a> <span class="size">(7.3KB)</span></li>
+<li><a href="files/Oswiadczenie_o_wyjazdach.docx" download><i class="fa-solid fa-file-arrow-down"></i> Oświadczenie o wyjazdach.docx</a> <span class="size">(13.9KB)</span></li>
+<li><a href="files/Penomocnictwo_na_zozenie_dokumentow_w_urzedzie_-_wzor_wypenienia.docx" download><i class="fa-solid fa-file-arrow-down"></i> Pełnomocnictwo na złożenie dokumentów w urzędzie - wzór wypełnienia .docx</a> <span class="size">(14.4KB)</span></li>
+<li><a href="files/Penomocnictwo_na_zozenie_dokumentow_w_urzedzie_-_wzor_wypenienia.pdf" download><i class="fa-solid fa-file-arrow-down"></i> Pełnomocnictwo na złożenie dokumentów w urzędzie - wzór wypełnienia .pdf</a> <span class="size">(364.5KB)</span></li>
+<li><a href="files/Podanie_uzupenienie_dokumentacji.docx" download><i class="fa-solid fa-file-arrow-down"></i> Podanie_uzupełnienie dokumentacji.docx</a> <span class="size">(20.3KB)</span></li>
+<li><a href="files/Zalacznik_nr_5_Wzor_oswiadczenia_o_datach_wyjazdu_z_Polski_-_wersja_3_0.doc" download><i class="fa-solid fa-file-arrow-down"></i> Zalacznik__nr_5_Wzor_oswiadczenia_o_datach_wyjazdu_z_Polski_-_wersja_3_0.doc</a> <span class="size">(42.5KB)</span></li>
+</ul>
+    </div>
 </body>
+
 </html>
