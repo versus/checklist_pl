@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="ru">
+<html>
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Карта резидента ЕС</title>
+    <title>Чек-лист: карта резидента ЕС</title>
     <style>
         body {
             width: 100%;
@@ -22,7 +21,6 @@
 
         .page {
             width: 210mm;
-            max-width: 100%;
             min-height: 297mm;
             padding: 10mm;
             margin: 10mm auto;
@@ -30,13 +28,51 @@
             border-radius: 5px;
             background: white;
             box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
-            font-size: 11pt;
-            line-height: 1.5;
         }
 
         @page {
             size: A4;
             margin: 0;
+        }
+
+        td,
+        th {
+            border: solid 1px grey;
+            padding: 3px;
+            line-height: 3mm;
+        }
+
+        td {
+            font-size: 12pt;
+            text-align: center;
+            min-width: 5mm;
+        }
+
+        th {
+            font-weight: normal;
+            font-size: 7pt;
+            text-align: left;
+        }
+
+        th.narrow {
+            max-width: 9mm;
+            overflow-wrap: anywhere;
+        }
+
+        tr.group th {
+            background-color: #ddd;
+            font-size: 11pt;
+            font-weight: bold;
+            padding: 1.5mm;
+            text-align: left;
+        }
+
+        tr.subgroup th {
+            background-color: #eee;
+            font-size: 8pt;
+            font-weight: bold;
+            padding: 3px;
+            text-align: left;
         }
 
         .site-nav {
@@ -62,47 +98,58 @@
             background-color: #ffb;
         }
 
-        h2 {
-            margin-top: 0;
+        .big-letter {
+            font-size: 13pt;
         }
 
-        ul {
-            padding-left: 1.4em;
+        a[rel="modal:open"] {
+            border-bottom: dotted 1px red;
+            text-decoration: none;
+            background-color: #ffb;
+            cursor: pointer;
         }
 
-        li {
-            margin: 4px 0;
+        input[type=checkbox] {
+            margin: 0 3.5px;
         }
 
-        mark {
-            background: none;
-            padding: 0 2px;
+        .updates-only {
+            display: none;
+            font-style: italic;
+            margin-bottom: 1mm;
         }
 
-        mark.red {
-            background-color: #fdd;
+        .print-button {
+            position: fixed;
+            z-index: 1;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            font-size: 30px;
+            padding: 10px;
+            border: solid 1px grey;
+            box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
+            background-color: #eff;
+            text-align: center;
+            cursor: pointer;
         }
 
-        mark.blue {
-            background-color: #dff;
-        }
-
-        mark.teal {
-            background-color: #dfd;
-        }
-
-        ul.files {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        ul.files a {
-            color: #06c;
-        }
-
-        .size {
-            color: grey;
-            font-size: 9pt;
+        .donate-button {
+            position: fixed;
+            z-index: 1;
+            bottom: 10px;
+            right: 10px;
+            width: 100px;
+            height: 100px;
+            font-size: 70px;
+            border: solid 1px grey;
+            box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
+            background-color: #eff;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 50px;
+            padding-top: 3px;
         }
 
         .help-button {
@@ -118,80 +165,784 @@
             padding-top: 10px;
         }
 
+        tr.non-printable * {
+            text-decoration: line-through;
+            background-color: transparent;
+            color: #aaa;
+        }
+
+        tr.non-printable>* * {
+            border-bottom: none;
+        }
+
+        .minor {
+            font-size: smaller;
+            font-style: italic;
+        }
+
         @media print {
+
+            html,
             body {
-                background-color: white;
+                width: 210mm;
+                height: 297mm;
+                background: white;
             }
 
             .page {
+                margin: 0;
                 border: initial;
                 border-radius: initial;
                 width: initial;
                 min-height: initial;
                 box-shadow: initial;
-                margin: 0;
+                background: initial;
+                page-break-after: always;
             }
 
             .non-printable {
                 display: none;
             }
+
+            #checklist tr>*:nth-child(1) {
+                display: none;
+            }
+
+            a[rel="modal:open"] {
+                text-decoration: none;
+                color: black;
+                background-color: transparent;
+                border-bottom: none !important;
+            }
         }
+    
+        th.src-gov { background-color: #dff; }
+        th.src-acc { background-color: #dfd; }
+        tr { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .legend span { display: inline-block; padding: 1px 6px; border: solid 1px grey; margin-right: 6px; }
+        .files { list-style: none; padding-left: 0; }
+        .files li { margin: 4px 0; }
+        .files a { color: #06c; }
+        .size { color: grey; font-size: 9pt; }
+        ul.notes li { margin: 4px 0; }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
     <script src="https://kit.fontawesome.com/e9057b7d35.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+    <script>
+        var spouseCol = 4;
+        var childCol = 5;
+        var colNum = 6;
+        var STORE = 'state_residence';
+
+        function updateRows() {
+            $('#checklist > tbody > tr').each(function () {
+                var $r = $(this);
+                var spouse = $('#spouse').val() == '1';
+                var children = $('#children').val() == '1';
+                var visible = true;
+                if ($r.hasClass('spouse-specific') || $r.hasClass('child-specific')) {
+                    visible = (spouse && $r.hasClass('spouse-specific')) || (children && $r.hasClass('child-specific'));
+                }
+                $r.toggle(visible);
+            });
+        }
+
+        function removeHash() {
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+
+        function configModal() {
+            $('a[rel="modal:open"][href="' + window.location.hash + '"]').click();
+            $('a[rel="modal:open"]').click(function () {
+                window.location.hash = $(this).attr('href');
+            });
+            var nativeClose = $.modal.close;
+            $.modal.close = function () {
+                removeHash();
+                nativeClose();
+            }
+            $(document).on('click.modal', 'a[rel~="modal:close"]', function () {
+                removeHash();
+            });
+        }
+
+        function getState() {
+            var state = {};
+            $('select.persisted').each(function (i, c) { state[c.name] = $(c).find(':selected').val(); });
+            $('.optional-check').each(function (i, c) { state[c.name] = c.checked; });
+            return JSON.stringify(state);
+        }
+
+        function setState(json) {
+            var state = JSON.parse(json);
+            $('select.persisted').each(function (i, c) {
+                var $c = $(c);
+                if (c.name in state) {
+                    $c.find('option').prop('selected', false);
+                    $c.find('option[value="' + state[c.name] + '"]').prop('selected', true);
+                    $c.change();
+                }
+            });
+            $('.optional-check').each(function (i, c) {
+                if (c.name in state) {
+                    c.checked = state[c.name];
+                    $(c).change();
+                }
+            });
+        }
+
+        function saveState() {
+            try { localStorage.setItem(STORE, getState()); } catch (e) { }
+        }
+
+        function restoreState() {
+            try {
+                var state = localStorage.getItem(STORE);
+                if (state) { setState(state); }
+            } catch (e) { }
+        }
+
+        $(function () {
+            configModal();
+
+            $('.print-button').click(function () { window.print(); });
+
+            $('#spouse').on('change', function () {
+                $('#checklist tr:not(.group):not(.subgroup) *:nth-child(' + spouseCol + '), .spouse-specific:not(.child-specific)').toggle($(this).val() == '1');
+                updateRows();
+                saveState();
+            });
+
+            $('#children').on('change', function () {
+                $('#checklist tr:not(.group):not(.subgroup) *:nth-child(' + childCol + '), .child-specific:not(.spouse-specific), .child-copy').toggle($(this).val() == '1');
+                updateRows();
+                saveState();
+            });
+
+            $('#numberOfChildren').on('change', function () {
+                var num = $(this).val();
+                $('.child-copy').remove();
+                $('#checklist tr:not(.group):not(.subgroup) *:nth-child(' + childCol + ')').each(function () {
+                    var $child = $(this);
+                    for (var i = 2; i <= num; i++) {
+                        $child.after($child.clone().addClass('child-copy'));
+                    }
+                });
+                $('#checklist tr.group, #checklist tr.subgroup').find('th:nth-child(2)').attr('colspan', colNum - 1 + num);
+                saveState();
+            });
+
+            $('.optional-check').on('change', function () {
+                $(this).closest('tr').toggleClass('non-printable', !this.checked);
+                saveState();
+            });
+
+            restoreState();
+            updateRows();
+        });
+    </script>
 </head>
 
 <body>
-    <a class="non-printable" target="_blank" href="https://t.me/JDG_PBH">
-        <div class="help-button"><i class="fa-solid fa-circle-info"></i></div>
-    </a>
-    <div class="page">
-        <div class="site-nav non-printable">
-    <a href="../"><i class="fa-solid fa-list-check"></i> Чек-лист на ВНЖ (деятельность)</a>
-    <a href="./" class="active"><i class="fa-solid fa-id-card"></i> Карта резидента ЕС</a>
-</div>
-        <h2>🪪 Список необходимых документов для оформления карты резидента ЕС</h2>
 
-<p>Безусловно, в каждом воеводстве могут быть небольшие расхождения и нюансы, однако я предлагаю вам универсальный список, составленный в соответствии с текущим законодательством, который позволит вам получить постоянный внж без проблем. Все лайфхаки и замечания будут указаны ниже, а также не поленитесь заглянуть в раздел FAQ, который будет постоянно пополнятся.</p>
-<p><strong>ВНИМАНИЕ!</strong></p>
-<ul>
-<li><strong>синим цветом обозначены документы, которые запрашиваются в гос органах (ZUS, Urząd</strong> <strong>skarbowy – налоговая)</strong></li>
-<li><strong>зеленым цветом обозначены документы, которые запрашиваются у бухгалтера, при наличии у заявителя работы или ИП</strong></li>
-</ul>
-<p><em><strong>Постоянный вид на жительство по оседлости (art 211 UoC):</strong></em></p>
-<ul>
-<li>Заявление (wniosek) - образец берем с гос сайта, то есть сайта вашего ужонда воеводства;</li>
-<li>Ксерокопия паспорта (все страницы с отметками);</li>
-<li>Kolorowe fotografie o wymiarach 45x35 mm, 4 egz.;</li>
-<li><u>Все основания пребывания за отчетный период</u> (визы, внж – решения о выдаче, безвиз, ожидание внж и тд),</li>
-<li>PIT-36/37/28 (если есть доля в ООО – то CIT) <u><strong>за прошлые три года до подачи;</strong></u></li>
-<li><mark class="teal"><strong>ZUS P ZCNA (указать дату), oryginał;</strong></mark></li>
-<li><mark class="teal"><strong>ZUS DRA (для ИП) или ZUS RCA (для наемного сотрудника) основного заявителя (указать дату), oryginał – по возможности за последние 2-3 месяца</strong></mark></li>
-<li>Если нет государственной страховки, предоставить частную;</li>
-<li>Akt małżeństwa (свидетельство о браке), kopia, oryginał do wglądu;</li>
-<li>Tłumaczenie przysięgłe Aktu małżeństwa (присяжный перевод свидетельства о браке), kopia, oryginał do wglądu;</li>
-<li>Ксерокопия текущей визы/внж, oryginał do wglądu;</li>
-<li>Oświadczenie o utrzymaniu członka rodziny (заявление о содержании члена семьи), oryginał</li>
-<li>Договор аренды, kopia, oryginał do wglądu (либо документы о праве собственности на жилье - akt notarialny, księga wieczysta);</li>
-<li>Документ, подтверждающий знание языка (сертификат на уровень B1, диплом, аттестат, сертификат по форме MEN), oryginał </li>
-<li>Potwierdzenie opłaty (640 zł);</li>
-<li><strong>В случае ИП</strong> - wydruk z CEIDG своего или супруга/и (выписка из реестра) - лучше актуальную на день подачи;</li>
-<li><strong>В случае наемного сотрудника</strong> – umowa o pracę/umowa zlecenia/umowa o dzieło;</li>
-<li><mark class="blue"><strong>Zaświadczenie o niezaleganiu w podatkach (справка об отсутствии задолженности перед налоговой) – в случае ИП или наемного сотрудника;</strong></mark></li>
-<li><mark class="blue"><strong>Zaświadczenie o niezaleganiu w opłaceniu składek ZUS (справка об отсутствии задолженности по оплате взносов) – в случае ИП;</strong></mark></li>
-<li><mark class="blue"><strong>Справка из ZUS по форме US-7 (лучше всего за весь период жизни в Польше, если была гос страховка) – можно запросить онлайн из личного кабинета в ZUS PUE cамостоятельно;</strong></mark></li>
-<li>Информация о всех выездах за последние 5 лет – лучше всего в форме таблицы.</li>
-</ul>
-<p><mark class="red"><em><strong>Табличка для подсчета необходимого дохода на карту резидента ЕС – </strong></em></mark><a href="https://archiwum.mazowieckie.pl/archiwum.mazowieckie.pl/download/1/56323/TABELA_-_KRYTERIUM_DOCHODOWE.xls" target="_blank" rel="noopener"><mark class="red"><em><strong>скачать</strong></em></mark></a><mark class="red"><em><strong> и адаптировать под себя.</strong></em></mark></p>
-<p><mark class="red"><em><strong>Образец таблички по подсчету срока пребывания - вещь необязательная, но значительно упрощающая подготовку документов:</strong></em></mark></p>
-<ul class="files"><li><a href="files/Wyliczenie_pobytu.xlsx" download><i class="fa-solid fa-file-arrow-down"></i> Wyliczenie_pobytu.xlsx</a> <span class="size">(14.1KB)</span></li>
-</ul><p>Документы, полученные в электронном виде, необходимо отправлять в электронном<br>виде (например, с помощью epuap). В случае печати их на бумажном носители стоит дополнительно к документу прикрепить (распечатать) подтверждение валидности подписи, которое вы можете получить тут: <mark class="red"><a href="https://weryfikacjapodpisu.pl/verification/" target="_blank" rel="noopener">https://weryfikacjapodpisu.pl/verification/</a></mark></p>
-<ul class="files"><li><a href="files/Oswiadczenie_o_utrzymaniu_czonkow_rodziny.docx" download><i class="fa-solid fa-file-arrow-down"></i> Oświadczenie o utrzymaniu członków rodziny (1).docx</a> <span class="size">(7.3KB)</span></li>
-<li><a href="files/Oswiadczenie_o_wyjazdach.docx" download><i class="fa-solid fa-file-arrow-down"></i> Oświadczenie o wyjazdach.docx</a> <span class="size">(13.9KB)</span></li>
-<li><a href="files/Penomocnictwo_na_zozenie_dokumentow_w_urzedzie_-_wzor_wypenienia.docx" download><i class="fa-solid fa-file-arrow-down"></i> Pełnomocnictwo na złożenie dokumentów w urzędzie - wzór wypełnienia .docx</a> <span class="size">(14.4KB)</span></li>
-<li><a href="files/Penomocnictwo_na_zozenie_dokumentow_w_urzedzie_-_wzor_wypenienia.pdf" download><i class="fa-solid fa-file-arrow-down"></i> Pełnomocnictwo na złożenie dokumentów w urzędzie - wzór wypełnienia .pdf</a> <span class="size">(364.5KB)</span></li>
-<li><a href="files/Podanie_uzupenienie_dokumentacji.docx" download><i class="fa-solid fa-file-arrow-down"></i> Podanie_uzupełnienie dokumentacji.docx</a> <span class="size">(20.3KB)</span></li>
-<li><a href="files/Zalacznik_nr_5_Wzor_oswiadczenia_o_datach_wyjazdu_z_Polski_-_wersja_3_0.doc" download><i class="fa-solid fa-file-arrow-down"></i> Zalacznik__nr_5_Wzor_oswiadczenia_o_datach_wyjazdu_z_Polski_-_wersja_3_0.doc</a> <span class="size">(42.5KB)</span></li>
-</ul>
+    <div class="page non-printable" style="min-height: auto">
+        <div class="print-button"><i class="fa-solid fa-print"></i></div>
+        <a target="_blank" href="https://t.me/JDG_PBH">
+            <div class="help-button"><i class="fa-solid fa-circle-info"></i></div>
+        </a>
+        <div class="site-nav non-printable">
+            <a href="../"><i class="fa-solid fa-list-check"></i> Чек-лист на ВНЖ (деятельность)</a>
+            <a href="./" class="active"><i class="fa-solid fa-id-card"></i> Карта резидента ЕС</a>
+        </div>
+        <h2>Чек-лист для подачи на карту долгосрочного резидента ЕС (Польша)</h2>
+        <p>Постоянный вид на жительство по оседлости (art. 211 UoC). В каждом воеводстве возможны небольшие расхождения
+            и нюансы, но этот универсальный список составлен в соответствии с текущим законодательством.</p>
+        <p class="legend"><b>ВНИМАНИЕ!</b>
+            <span style="background:#dff">синим</span> обозначены документы, которые запрашиваются в госорганах (ZUS,
+            Urząd skarbowy),
+            <span style="background:#dfd">зелёным</span> &mdash; документы, которые запрашиваются у бухгалтера, при
+            наличии у заявителя работы или ИП.</p>
+        <h3>Состав семьи</h3>
+        Супруг
+        <select class="persisted" name="spouse" id="spouse">
+            <option value="0">отсутствует, либо подаётся отдельно, либо не подаётся</option>
+            <option value="1" selected="selected">подаётся вместе, на содержании</option>
+        </select>
+        <br /><br />
+        Дети
+        <select class="persisted" name="children" id="children">
+            <option value="0">отсутствуют, либо подаются с супругом, либо не подаются</option>
+            <option value="1" selected="selected">подаются вместе, на содержании</option>
+        </select>
+        <div class="child-specific">
+            <br />
+            Сколько детей
+            <select class="persisted" name="numberOfChildren" id="numberOfChildren">
+                <option value="1" selected="selected">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+    </div>
+    <div class="page">
+        <h3 style="display:none">Карта резидента ЕС</h3>
+        <table id="checklist" cellpadding="0" cellspacing="0">
+            <tr>
+                <th><a rel="modal:open" href="#c-header-optional">Опц</a></th>
+                <th></th>
+                <td class="narrow"><a class="big-letter" rel="modal:open" href="#c-header-g">Г</a></td>
+                <td class="narrow"><a class="big-letter" rel="modal:open" href="#c-header-s">С</a></td>
+                <td class="narrow"><a class="big-letter" rel="modal:open" href="#c-header-r">Р</a></td>
+                <td class="narrow"><a class="big-letter" style="font-size: 15pt" rel="modal:open"
+                        href="#c-header-check">&check;</a></td>
+                <td class="narrow"><a class="big-letter" style="font-size: 15pt; line-height: 5mm" rel="modal:open"
+                        href="#c-header-printed"><i class="fa-solid fa-paperclip"></i></a></td>
+            </tr>
+            <tr class="group">
+                <th></th>
+                <th colspan="6">Заявление и общие документы</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-wniosek">Заявление (wniosek)</a> на карту резидента ЕС
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-passport">Копия паспорта</a> (все страницы с отметками)
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-photos">Цветные фото 45×35 мм, 4 шт.</a>
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-fee">Подтверждение оплаты пошлины (640 zł)</a>
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-visa">Копия текущей визы / ВНЖ</a> (оригинал для сверки)
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="group">
+                <th></th>
+                <th colspan="6">Подтверждение 5 лет легального пребывания</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-stay">Все основания пребывания за отчётный период</a> (визы, решения о ВНЖ, безвиз, ожидание ВНЖ и т.д.)
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-trips">Информация о всех выездах за последние 5 лет</a> (лучше в виде таблицы)
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th><input class="optional-check" name="ch-calc" type="checkbox" checked="checked" /></th>
+                <th>
+                    <a rel="modal:open" href="#c-calc">Таблица подсчёта срока пребывания</a> (необязательно, но упрощает подготовку)
+                </th>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="group">
+                <th></th>
+                <th colspan="6">Доход, налоги и работа</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th class="src-acc">
+                    <a rel="modal:open" href="#c-pit">PIT-36/37/28</a> (при доле в ООО &mdash; CIT) за последние три года
+                </th>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-income">Расчёт необходимого дохода</a> (по таблице)
+                </th>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th class="src-acc">
+                    <a rel="modal:open" href="#c-zcna">ZUS P ZCNA</a> (с датой), оригинал
+                </th>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th class="src-acc">
+                    <a rel="modal:open" href="#c-dra">ZUS DRA</a> (ИП) или ZUS RCA (наёмный сотрудник) основного заявителя &mdash; по возможности за последние 2&ndash;3 месяца
+                </th>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th><input class="optional-check" name="ch-ceidg" type="checkbox" checked="checked" /></th>
+                <th>
+                    <a rel="modal:open" href="#c-ceidg">Для ИП: выписка из CEIDG</a> (своя или супруга/и, актуальная на день подачи)
+                </th>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th><input class="optional-check" name="ch-contract" type="checkbox" checked="checked" /></th>
+                <th>
+                    <a rel="modal:open" href="#c-contract">Для наёмного сотрудника: umowa o pracę / zlecenia / o dzieło</a>
+                </th>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th class="src-gov">
+                    <a rel="modal:open" href="#c-taxclear">Zaświadczenie o niezaleganiu w podatkach</a> (нет задолженности перед налоговой) &mdash; ИП или наёмный
+                </th>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th><input class="optional-check" name="ch-zusclear" type="checkbox" checked="checked" /></th>
+                <th class="src-gov">
+                    <a rel="modal:open" href="#c-zusclear">Zaświadczenie o niezaleganiu w składkach ZUS</a> (нет задолженности по взносам) &mdash; для ИП
+                </th>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th class="src-gov">
+                    <a rel="modal:open" href="#c-us7">Справка из ZUS по форме US-7</a> (лучше за весь период жизни в Польше, если была гос. страховка)
+                </th>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="group">
+                <th></th>
+                <th colspan="6">Страховка, жильё, язык</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-insurance">Подтверждение медстраховки</a> (государственной; если её нет &mdash; частная)
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-lease">Договор аренды</a> (копия, оригинал для сверки) либо документы о праве собственности
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-lang">Документ о знании польского языка (B1)</a>, оригинал
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td>?</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="group">
+                <th></th>
+                <th colspan="6">Семья</th>
+            </tr>
+            <tr class="spouse-specific">
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-marriage">Akt małżeństwa</a> (свидетельство о браке), копия, оригинал для сверки
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="spouse-specific">
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-translation">Tłumaczenie przysięgłe</a> (присяжный перевод) свидетельства о браке, копия, оригинал для сверки
+                </th>
+                <td>+</td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="child-specific">
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-birth">Свидетельство о рождении ребёнка</a> + присяжный перевод
+                </th>
+                <td>?</td>
+                <td></td>
+                <td>+</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="spouse-specific child-specific">
+                <th></th>
+                <th>
+                    <a rel="modal:open" href="#c-support">Oświadczenie o utrzymaniu członka rodziny</a> (заявление о содержании члена семьи), оригинал
+                </th>
+                <td>+</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="group">
+                <th></th>
+                <th colspan="6">По необходимости</th>
+            </tr>
+            <tr>
+                <th><input class="optional-check" name="ch-power" type="checkbox" checked="checked" /></th>
+                <th>
+                    <a rel="modal:open" href="#c-power">Pełnomocnictwo</a> (если документы подаёт представитель)
+                </th>
+                <td>?</td>
+                <td>?</td>
+                <td>?</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th><input class="optional-check" name="ch-podanie" type="checkbox" checked="checked" /></th>
+                <th>
+                    <a rel="modal:open" href="#c-podanie">Podanie &mdash; дослать документы</a> (если ужонд запросил дополнение)
+                </th>
+                <td>?</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th><input class="optional-check" name="ch-esign" type="checkbox" checked="checked" /></th>
+                <th>
+                    <a rel="modal:open" href="#c-esign">Электронные документы: подтверждение валидности подписи</a>
+                </th>
+                <td>?</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="group">
+                <th></th>
+                <th colspan="6">Подаётся не позднее последнего дня легального пребывания; каждый член семьи подаёт своё заявление</th>
+            </tr>
+        </table>
+    </div>
+
+    <div class="non-printable" style="padding-bottom: 20px">
+        <div class="page" style="min-height: auto">
+            <h3>Образцы документов</h3>
+            <ul class="files">
+                <li><a href="files/Wyliczenie_pobytu.xlsx" download><i class="fa-solid fa-file-arrow-down"></i> Wyliczenie_pobytu.xlsx</a> <span class="size">(14.1KB)</span></li>
+                <li><a href="files/Oswiadczenie_o_utrzymaniu_czonkow_rodziny.docx" download><i class="fa-solid fa-file-arrow-down"></i> Oświadczenie o utrzymaniu członków rodziny.docx</a> <span class="size">(7.3KB)</span></li>
+                <li><a href="files/Oswiadczenie_o_wyjazdach.docx" download><i class="fa-solid fa-file-arrow-down"></i> Oświadczenie o wyjazdach.docx</a> <span class="size">(13.9KB)</span></li>
+                <li><a href="files/Penomocnictwo_na_zozenie_dokumentow_w_urzedzie_-_wzor_wypenienia.docx" download><i class="fa-solid fa-file-arrow-down"></i> Pełnomocnictwo na złożenie dokumentów w urzędzie - wzór wypełnienia.docx</a> <span class="size">(14.4KB)</span></li>
+                <li><a href="files/Penomocnictwo_na_zozenie_dokumentow_w_urzedzie_-_wzor_wypenienia.pdf" download><i class="fa-solid fa-file-arrow-down"></i> Pełnomocnictwo na złożenie dokumentów w urzędzie - wzór wypełnienia.pdf</a> <span class="size">(364.5KB)</span></li>
+                <li><a href="files/Podanie_uzupenienie_dokumentacji.docx" download><i class="fa-solid fa-file-arrow-down"></i> Podanie_uzupełnienie dokumentacji.docx</a> <span class="size">(20.3KB)</span></li>
+                <li><a href="files/Zalacznik_nr_5_Wzor_oswiadczenia_o_datach_wyjazdu_z_Polski_-_wersja_3_0.doc" download><i class="fa-solid fa-file-arrow-down"></i> Załącznik nr 5 - wzór oświadczenia o datach wyjazdu z Polski.doc</a> <span class="size">(42.5KB)</span></li>
+            </ul>
+            <p>Таблица критерия дохода: <a target="_blank" href="https://archiwum.mazowieckie.pl/archiwum.mazowieckie.pl/download/1/56323/TABELA_-_KRYTERIUM_DOCHODOWE.xls">TABELA_-_KRYTERIUM_DOCHODOWE.xls</a> (внешний сайт).</p>
+
+            <h3>Что такое карта резидента</h3>
+            <p>Это постоянный вид на жительство долгосрочного резидента ЕС, выдаваемый в Польше. Разрешение выдаётся на
+                неопределённый срок. Юридическое основание: закон об иностранцах от 12 декабря 2013 г., ст. 211&ndash;212
+                (<a target="_blank" href="http://isap.sejm.gov.pl/isap.nsf/download.xsp/WDU20130001650/U/D20131650Lj.pdf">текст</a>).</p>
+            <p><b>Кому полагается:</b> иностранцу, легально и непрерывно пребывающему в Польше не менее 5 лет
+                непосредственно до подачи заявления, при условии, что он:</p>
+            <ul class="notes">
+                <li>имеет стабильный и регулярный доход, достаточный для содержания себя и членов семьи на попечении;</li>
+                <li>имеет медицинскую страховку (общественную или подтверждение возмещения расходов на лечение в Польше);</li>
+                <li>подтвердил знание польского языка (не ниже B1).</li>
+            </ul>
+            <p><b>Когда подавать:</b> например, при переезде 15 февраля 2021 заявление можно подавать примерно с 16 февраля
+                2026 года.</p>
+
+            <h3>FAQ</h3>
+            <p><b>Сколько можно отсутствовать в Польше за 5 лет?</b><br>Один выезд &mdash; не больше 6 месяцев, суммарно за 5
+                лет &mdash; не больше 10 месяцев (есть исключения: здоровье близких, командировки, учёба по обмену и др.).</p>
+            <p><b>У меня польская Голубая карта все 5 лет. Лимит 18 месяцев?</b><br>18 месяцев относятся только к обладателям
+                Голубых карт других государств, окончательно переехавшим в Польшу. С польской Голубой картой лимит те же 10
+                месяцев.</p>
+            <p><b>10 месяцев &mdash; это 300 дней?</b><br>Для упрощения считаем так, да.</p>
+            <p><b>Как считаются дни выезда?</b><br>Зависит от инспектора: вылет 01.01 и возвращение 05.01 могут посчитать как 5
+                дней (1&ndash;5), а могут как 3 (2&ndash;4 января).</p>
+            <p><b>За какой период считаются выезды?</b><br>С начала жизни в Польше до даты подачи заявления, либо за
+                необходимые 5 лет (в зависимости от ситуации).</p>
+            <p><b>Можно ли превышать лимит после подачи заявления?</b><br>Да.</p>
+            <p><b>Как проверяют выезды в рамках ЕС?</b><br>Авиарейсы из польских аэропортов, банковские операции, биллинг
+                телефона и т.п. Делают ли такие проверки всегда &mdash; нет, но случайные проверки бывают.</p>
+
+            <h3>Словарик</h3>
+            <p><b>Оригинал (oryginał).</b> Документ, не являющийся копией. Копию вместо оригинала можно предъявить, только если
+                она заверена: сотрудником принимающего ужонда (печать и подпись), нотариусом либо юридическим советником или
+                адвокатом, уполномоченным вами.</p>
+            <p><b>Формальные недостатки (braki formalne).</b> Документы, без которых начать рассмотрение дела невозможно
+                (заполненная и подписанная анкета, фото, оригинал паспорта и т.п.). При их наличии ужонд присылает письмо со
+                списком и сроком; если не устранить недостатки вовремя, заявление остаётся без рассмотрения.</p>
+            <p><b>Экономическая деятельность.</b> Предпринимательство, управление фирмой после регистрации в реестре CEIDG или
+                KRS.</p>
+
+            <h3>Какие права даёт статус «резидент ЕС» в других странах</h3>
+            <ul class="notes">
+                <li>Статус даёт в выдавшей стране право жить и работать бессрочно без разрешения на работу (директива
+                    2003/109/EC).</li>
+                <li>Во второй стране можно получить ВНЖ с целью работы, иногда без лишних формальностей и даже без контракта.
+                    Страны вправе (но не обязаны) ограничить свободный доступ к рынку труда не более чем на первые 12 месяцев.</li>
+                <li>Находиться в другой стране Шенгена более 90 дней в полугодии без национальной визы/ВНЖ нельзя.</li>
+                <li>Получение ВНЖ во второй стране не приводит к потере статуса в первой.</li>
+                <li><i>Pobyt stały</i> (обычный постоянный ВНЖ) таких прав не даёт.</li>
+                <li>Для владельцев Голубой Карты ЕС, воспользовавшихся правом миграции, возможно суммирование срока: 5 лет
+                    в ЕС, из них последние 2 года в стране подачи.</li>
+            </ul>
+            <p>Подробности и таблица по странам: <a target="_blank" href="https://blog.mail4yuna.tk/2017/03/22/jakie-prawa-daje-status-dlugoterminowego-rezydenta-eu-w-innych-krajach/">статья в блоге (2017)</a>,
+                <a target="_blank" href="http://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex:32003L0109">директива 2003/109/EC</a>.
+                Данные могли устареть.</p>
+
+            <h3>Полезные ссылки</h3>
+            <ul class="notes">
+                <li><a target="_blank" href="https://www.gov.pl/web/uw-zachodniopomorski/rezydent-dlugoterminowy-ue">gov.pl: Rezydent długoterminowy UE</a></li>
+                <li><a target="_blank" href="https://migrant.poznan.uw.gov.pl/pl/procedury/zezwolenie-na-pobyt-rezydenta-dlugoterminowego-ue">migrant.poznan.uw.gov.pl: Zezwolenie na pobyt rezydenta długoterminowego UE</a></li>
+                <li><a target="_blank" href="https://weryfikacjapodpisu.pl/verification/">Проверка валидности электронной подписи</a></li>
+                <li><a target="_blank" href="https://t.me/JDG_PBH">Чат «ИП в Польше»</a></li>
+            </ul>
+            <p>Это неофициальный чек-лист: перед подачей сверьтесь с требованиями ужонда вашего воеводства.
+                Раздел FAQ с лайфхаками будет пополняться.</p>
+        </div>
+    </div>
+
+    <div class="non-printable" id="comments">
+        <div class="modal" id="c-header-g">
+            <p>В этой колонке отмечено, какие документы нужно иметь в пакете <b>Г</b>лавного заявителя.</p><p>На распечатанном листике можно обводить кружочками то, что уже подготовлено.</p>
+        </div>
+
+        <div class="modal" id="c-header-s">
+            <p>В этой колонке отмечено, какие документы нужно иметь в пакете <b>С</b>упруга, подающегося вместе с вами.</p><p>У каждого члена семьи своё заявление, поэтому большинство документов нужно в отдельном экземпляре.</p>
+        </div>
+
+        <div class="modal" id="c-header-r">
+            <p>В этой колонке отмечено, какие документы нужно иметь в пакете <b>Р</b>ебёнка, подающегося вместе с вами.</p>
+        </div>
+
+        <div class="modal" id="c-header-check">
+            На распечатанном листике в этой колонке можно отмечать, какие документы подготовлены для всех членов семьи.
+        </div>
+
+        <div class="modal" id="c-header-printed">
+            <p>На распечатанном листике в этой колонке можно отмечать, какие документы распечатаны.</p><p>Рекомендую для каждого члена семьи завести отдельную папку для документов и сразу складывать туда то, что напечатано.</p>
+        </div>
+
+        <div class="modal" id="c-header-optional">
+            После изучения комментариев к документам можете выключить ненужные вам строки, тогда они не будут напечатаны.
+        </div>
+
+        <div class="modal" id="c-wniosek">
+            <p>Образец формуляра берём с государственного сайта, то есть сайта ужонда вашего воеводства (формуляр F-01/KIU-254). Во многих воеводствах подача идёт электронно через MOS &mdash; проверьте на сайте вашего ужонда.</p><p>Заявление подаётся не позднее последнего дня легального пребывания в Польше.</p>
+        </div>
+
+        <div class="modal" id="c-passport">
+            <p>Нужна копия <b>всех страниц с отметками</b>. Паспорт нужно предъявить при подаче.</p>
+        </div>
+
+        <div class="modal" id="c-photos">
+            <p>4 цветных фото 45×35 мм: свежие (не старше 6 месяцев), на светлом однородном фоне, лицо анфас, без головного убора и тёмных очков, лицо занимает 70&ndash;80% кадра.</p>
+        </div>
+
+        <div class="modal" id="c-fee">
+            <p>Пошлина &mdash; <b>640 zł</b> с каждого заявителя. Сохраните и приложите подтверждение оплаты.</p>
+        </div>
+
+        <div class="modal" id="c-visa">
+            <p>Копия действующей визы или решения о ВНЖ + оригинал для сверки. Копию вместо оригинала можно подать, если она заверена (нотариус, юридический советник или адвокат, уполномоченный вами, либо сотрудник принимающего ужонда).</p>
+        </div>
+
+        <div class="modal" id="c-stay">
+            <p>Нужно подтвердить <b>5 лет</b> легального и непрерывного пребывания непосредственно перед подачей: визы, решения о выдаче ВНЖ, безвиз, период ожидания решения по ВНЖ и т.д.</p><p>Чтобы не запутаться в датах, воспользуйтесь таблицей: <a target="_blank" href="files/Wyliczenie_pobytu.xlsx">Wyliczenie_pobytu.xlsx</a>.</p>
+        </div>
+
+        <div class="modal" id="c-trips">
+            <p>Нужна информация о всех выездах из Польши за последние 5 лет &mdash; лучше всего в виде таблицы.</p><ul><li>Один выезд &mdash; не больше <b>6 месяцев</b>, суммарно все выезды за 5 лет &mdash; не больше <b>10 месяцев</b> (для простоты считают как 300 дней). Есть исключения: состояние здоровья близких, командировки, учёба по обмену и др.</li><li>Как считать дни, зависит от инспектора: вылет 01.01 и возвращение 05.01 могут посчитать как 5 дней, а могут как 3.</li><li>Считаются выезды с начала жизни в Польше (или за нужные 5 лет) до даты подачи. <b>После подачи заявления лимит можно превышать.</b></li><li>Выезды могут проверять (авиабилеты из польских аэропортов, банковские операции, биллинг телефона), но не всегда.</li></ul><p>Образцы: <a target="_blank" href="files/Oswiadczenie_o_wyjazdach.docx">Oświadczenie o wyjazdach (.docx)</a>, <a target="_blank" href="files/Zalacznik_nr_5_Wzor_oswiadczenia_o_datach_wyjazdu_z_Polski_-_wersja_3_0.doc">Załącznik nr 5 &mdash; wzór oświadczenia o datach wyjazdu (.doc)</a>.</p>
+        </div>
+
+        <div class="modal" id="c-calc">
+            <p>Необязательная, но очень полезная табличка: <a target="_blank" href="files/Wyliczenie_pobytu.xlsx">Wyliczenie_pobytu.xlsx</a>.</p>
+        </div>
+
+        <div class="modal" id="c-pit">
+            <p>Декларации за <b>последние три года</b> до подачи. <span style="background:#dfd">Зелёным</span> отмечены документы, которые вы берёте у бухгалтера (если есть работа или ИП).</p>
+        </div>
+
+        <div class="modal" id="c-income">
+            <p>Нужен стабильный и регулярный доход, достаточный на содержание вас и членов семьи на вашем содержании. Стабильный источник &mdash; легальный и не меняющийся в долгой перспективе (например, ежемесячное вознаграждение за работу). <b>Деньги на банковском счету сами по себе не считаются подтверждением дохода.</b> Для учащихся в Польше достаточно подтвердить наличие средств на содержание.</p><p>Рассчитайте доход по таблице критерия дохода (<a target="_blank" href="https://archiwum.mazowieckie.pl/archiwum.mazowieckie.pl/download/1/56323/TABELA_-_KRYTERIUM_DOCHODOWE.xls">скачать .xls</a>) и адаптируйте под себя. Пороговые суммы меняются &mdash; используйте актуальную версию.</p>
+        </div>
+
+        <div class="modal" id="c-zcna">
+            <p>ZUS P ZCNA с указанием даты, оригинал. Берётся у бухгалтера.</p>
+        </div>
+
+        <div class="modal" id="c-dra">
+            <p>ZUS DRA для ИП или ZUS RCA для наёмного сотрудника, основного заявителя, с указанием даты, оригинал. По возможности &mdash; за последние 2&ndash;3 месяца. Берётся у бухгалтера.</p>
+        </div>
+
+        <div class="modal" id="c-ceidg">
+            <p>Распечатка (wydruk) из CEIDG &mdash; своя или супруга/и. Лучше актуальная на день подачи.</p>
+        </div>
+
+        <div class="modal" id="c-contract">
+            <p>Договор о работе: umowa o pracę, umowa zlecenia или umowa o dzieło.</p>
+        </div>
+
+        <div class="modal" id="c-taxclear">
+            <p>Справка об отсутствии задолженности перед налоговой (<i>urząd skarbowy</i>) &mdash; для ИП или наёмного сотрудника. <span style="background:#dff">Синим</span> отмечены документы из госорганов.</p>
+        </div>
+
+        <div class="modal" id="c-zusclear">
+            <p>Справка об отсутствии задолженности по взносам в ZUS &mdash; для ИП.</p>
+        </div>
+
+        <div class="modal" id="c-us7">
+            <p>Справка US-7 из ZUS, лучше за весь период жизни в Польше, если была гос. страховка. Запросить можно самостоятельно онлайн через ZUS PUE:</p><ol><li>Войдите в PUE ZUS (Profil Zaufany, подпись kwalifikowany или банковский вход).</li><li>„Ubezpieczony&rdquo; &rarr; „Panel ubezpieczonego&rdquo; &rarr; „Usługi&rdquo; &rarr; „Pokaż&rdquo;.</li><li>Найдите «US-7» (&bdquo;Złożenie dokumentu US-7. Wniosek o wydanie zaświadczenia/informacji z konta osoby ubezpieczonej&rdquo;) &rarr; „Przejdź do usługi&rdquo;.</li><li>Стр. 1: тип &mdash; „ZAŚWIADCZENIE&rdquo;. Стр. 2: отметьте нужные данные, период, укажите обоснование.</li><li>Способ получения: электронно через PUE (по умолчанию, рекомендуется) либо почтой/лично.</li><li>Подпишите (ePUAP, kwalifikowany или Profil Zaufany) и отправьте. Придёт SMS/email, затем подтвердите UPD, чтобы открыть документ.</li></ol><p>Срок &mdash; до 7 дней, при отсутствии проблем может быть готово практически сразу.</p>
+        </div>
+
+        <div class="modal" id="c-insurance">
+            <p>Нужна медицинская страховка, покрывающая лечение в Польше (семейный врач, больница). Страховка от несчастных случаев <b>не подходит</b>. Страховка должна быть действительной на день принятия решения.</p><ul><li>Договор с NFZ (оригинал для проверки) + подтверждение уплаты взносов. Взнос платится до 15-го числа следующего месяца.</li><li>Подтверждение регистрации в ZUS + подтверждение оплаты взносов в ZUS.</li><li>Частный или иностранный полис с присяжным переводом на польский, покрывающий расходы на лечение в Польше. Оплату взноса подтвердите платёжкой (оригинал для проверки).</li></ul>
+        </div>
+
+        <div class="modal" id="c-lease">
+            <p>Договор аренды, копия + оригинал для сверки; либо документы о праве собственности (akt notarialny, księga wieczysta).</p>
+        </div>
+
+        <div class="modal" id="c-lang">
+            <p>Подтверждение знания польского языка на уровне не ниже <b>B1</b>: государственный сертификат, сертификаты признанных организаций (например, ECL, telc), диплом, аттестат, сертификат по форме MEN. Предъявляется оригинал.</p><p>Для детей уточните требования в вашем ужонде.</p>
+        </div>
+
+        <div class="modal" id="c-marriage">
+            <p>Свидетельство о браке, копия, оригинал для сверки. Если акт гражданского состояния не внесён в польский реестр, см. <a target="_blank" href="https://docs.google.com/document/d/1frrA4U6rh3HGMaTK6i2lZBDkZQnvETKLm1XIFtMFn1A/edit?usp=sharing">документ об umiejscowieniu aktów stanu cywilnego</a> (дополняется сообществом).</p>
+        </div>
+
+        <div class="modal" id="c-translation">
+            <p>Присяжный перевод свидетельства о браке (<i>tłumaczenie przysięgłe</i>), копия, оригинал для сверки.</p>
+        </div>
+
+        <div class="modal" id="c-birth">
+            <p>Этого пункта нет в исходном списке, но для подтверждения родства ребёнок обычно предъявляет свидетельство о рождении с присяжным переводом. Уточните в вашем ужонде.</p>
+        </div>
+
+        <div class="modal" id="c-support">
+            <p>Заявление о содержании члена семьи, оригинал. Образец: <a target="_blank" href="files/Oswiadczenie_o_utrzymaniu_czonkow_rodziny.docx">Oświadczenie o utrzymaniu członków rodziny (.docx)</a>.</p>
+        </div>
+
+        <div class="modal" id="c-power">
+            <p>Если документы вместо вас подаёт представитель. Образцы: <a target="_blank" href="files/Penomocnictwo_na_zozenie_dokumentow_w_urzedzie_-_wzor_wypenienia.docx">.docx</a>, <a target="_blank" href="files/Penomocnictwo_na_zozenie_dokumentow_w_urzedzie_-_wzor_wypenienia.pdf">.pdf (пример заполнения)</a>.</p>
+        </div>
+
+        <div class="modal" id="c-podanie">
+            <p>Если ужонд прислал вызов устранить формальные недостатки (<i>wezwanie do usunięcia braków formalnych</i>), документы нужно дослать в указанный срок &mdash; иначе заявление останется без рассмотрения. Образец сопроводительного заявления: <a target="_blank" href="files/Podanie_uzupenienie_dokumentacji.docx">Podanie_uzupełnienie dokumentacji (.docx)</a>.</p>
+        </div>
+
+        <div class="modal" id="c-esign">
+            <p>Документы, полученные в электронном виде, нужно отправлять в электронном виде (например, через ePUAP). Если вы печатаете их на бумаге, приложите распечатку подтверждения валидности подписи: <a target="_blank" href="https://weryfikacjapodpisu.pl/verification/">weryfikacjapodpisu.pl</a>.</p>
+        </div>
     </div>
 </body>
 
